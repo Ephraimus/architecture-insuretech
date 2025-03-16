@@ -1,0 +1,28 @@
+apiVersion: apps/v1            # Версия API для Deployment (обычно apps/v1).
+kind: Deployment               # Тип объекта: Deployment позволяет управлять подами и их количеством.
+metadata:
+  name: testapp                # Уникальное имя Deployment в рамках неймспейса.
+  labels:
+    app: testapp               # Метка для самого Deployment. Удобно, когда она совпадает с шаблоном подов.
+spec:
+  replicas: 1                  # Сколько реплик (потов) мы хотим запустить по умолчанию.
+  selector:
+    matchLabels:
+      app: testapp             # Определяет, какие поды (по меткам) будут управляться этим Deployment.
+  template:
+    metadata:
+      labels:
+        app: testapp           # Эти метки указывают, что под принадлежит именно этому Deployment.
+    spec:
+      containers:              # Список контейнеров, запускаемых в этом поде.
+      - name: testapp          # Имя контейнера внутри пода.
+        image: shestera/scaletestapp  # Docker-образ из публичного репозитория (Docker Hub).
+        ports:
+          - containerPort: 8080 # Порт, который контейнер слушает внутри пода.
+        resources:
+          requests:            # Минимально гарантированные ресурсы для контейнера.
+            cpu: "20m"         # 20 милиядер, т.е. 0.02 ядра CPU.
+            memory: "30Mi"     # 30 Мб памяти зарезервировано под контейнер.
+          limits:              # Жёсткие ограничения, выше которых контейнер не может потреблять ресурсы.
+            cpu: "20m"
+            memory: "30Mi"

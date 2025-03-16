@@ -1,0 +1,45 @@
+# Пример схемы GraphQL, эквивалентной исходному REST-API client-info.
+# Она позволяет гибко запрашивать разные наборы полей у сущностей Client, Document и Relative,
+# тем самым избегая избыточной передачи данных.
+
+schema {
+  query: Query
+}
+
+# Точка входа для всех запросов
+type Query {
+  # Получение полной информации о клиенте (включая любые нужные поля)
+  client(id: ID!): Client
+
+  # При желании можно оставить дополнительные Query для прямого запроса документов или родственников.
+  # Это не всегда обязательно, но позволяет явно повторить возможности REST API (getDocuments, getRelatives):
+  documents(clientId: ID!): [Document]
+  relatives(clientId: ID!): [Relative]
+}
+
+# Главная сущность "Клиент"
+type Client {
+  id: ID!
+  name: String
+  age: Int
+  # При необходимости можно подтягивать документы и родственников в одном запросе.
+  documents: [Document]
+  relatives: [Relative]
+}
+
+# Документы клиента
+type Document {
+  id: ID!
+  type: String
+  number: String
+  issueDate: String
+  expiryDate: String
+}
+
+# Родственники клиента
+type Relative {
+  id: ID!
+  relationType: String
+  name: String
+  age: Int
+}

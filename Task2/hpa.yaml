@@ -1,0 +1,24 @@
+apiVersion: autoscaling/v2      # Версия API для HPA (Horizontal Pod Autoscaler).
+kind: HorizontalPodAutoscaler   # Сам объект, который будет "автоматически" масштабировать поды.
+metadata:
+  name: hpa                     # Уникальное имя HPA в рамках неймспейса.
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1         # HPA ссылается на Deployment, использующий версию API apps/v1.
+    kind: Deployment            # Масштабируем именно Deployment (не ReplicaSet, не StatefulSet).
+    name: testapp               # Имя Deployment, который нужно масштабировать.
+  minReplicas: 1                # Минимальное кол-во реплик, ниже которого HPA не будет опускаться.
+  maxReplicas: 10               # Максимальное кол-во реплик, выше которого HPA не будет подниматься.
+  metrics:
+    - type: Resource            # Тип метрики - системный ресурс (CPU, Memory).
+      resource:
+        name: memory            # Следим за использованием памяти (RAM).
+        target:
+          type: Utilization     # Целевой показатель: процент загрузки ресурса (от Requests).
+          averageUtilization: 80 # Если средняя загрузка памяти выше 80% (от requests), масштабируем вверх, если ниже - вниз.
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
